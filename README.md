@@ -90,7 +90,7 @@ The techniques taught should only be applied:
 ## Author
 
 **Marco** ([@Marco-Security](https://github.com/Marco-Security))
-SOC Analyst in training | MSc Applied Physics | Puebla, México
+SOC Analyst in training | MSc Applied Physics 
 
 ## License
 
