@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../theme/colors';
 import { challenges } from '../data/challenges';
 
@@ -165,19 +166,26 @@ function DefaultBankingScenario() {
   const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJyb2xlIjoic3VwZXJ1c2VyIiwiYmFsYW5jZSI6Ijk5OTk5In0.DEMO_SIGNATURE';
 
   async function handleLogin() {
-    if (user === 'admin' && pass === 'admin123') {
-      // Guardamos el token en AsyncStorage — esta es la vulnerabilidad
-      // En una app real, esto expone el token a cualquier proceso con acceso al storage
-      try {
-        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-        await AsyncStorage.setItem('bank_auth_token', fakeToken);
-        setLoggedIn(true);
-        setMessage('');
-      } catch (e) {
-        setLoggedIn(true);
-      }
-    } else {
+    if (user !== 'admin' || pass !== 'admin123') {
       setMessage('Credenciales incorrectas. Prueba con las credenciales de prueba.');
+      return;
+    }
+
+    try {
+      // VULNERABILIDAD INTENCIONAL: AsyncStorage guarda en texto plano
+      // Esto es lo que el atacante extraerá con `adb run-as`
+      await AsyncStorage.setItem('bank_auth_token', fakeToken);
+      await AsyncStorage.setItem('bank_user_data', JSON.stringify({
+        user: 'admin',
+        role: 'superuser',
+        balance: 99999,
+        session_started: new Date().toISOString(),
+      }));
+      setLoggedIn(true);
+      setMessage('');
+    } catch (e) {
+      // Si el storage falla, el login NO debe avanzar
+      setMessage('Error al guardar la sesión: ' + e.message);
     }
   }
 
