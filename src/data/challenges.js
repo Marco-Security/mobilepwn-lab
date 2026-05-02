@@ -26,8 +26,8 @@ export const challenges = [
   
   tools: [
     'adb (Android Debug Bridge)',
-    'Terminal / PowerShell',
-    'jwt.io (opcional, para decodificar el token)',
+    'Una terminal en tu sistema operativo',
+    'Conocimiento básico de filesystem Linux/Unix',
   ],
   
   environment: [
@@ -37,10 +37,10 @@ export const challenges = [
   ],
   
   hints: [
-    'Las apps Android guardan datos en /data/data/[package_name]/',
-    'AsyncStorage en React Native usa un archivo SQLite o JSON local',
-    'Busca el directorio RCTAsyncLocalStorage_V1 dentro del storage de la app',
-    'El archivo manifest.json contiene los pares clave-valor guardados',
+    'Las apps con su propio sandbox guardan datos en una ruta predecible del sistema, ¿la conoces?',
+    'ADB tiene un comando que te permite actuar con la identidad de una app específica, si esta lo permite',
+    'Las librerías de almacenamiento suelen tener nombres internos distintos a los que ves en el código fuente',
+    'No todos los archivos se ven como esperas si los abres con la herramienta equivocada',
   ],
   
   // Flag = parte característica del JWT que el usuario debe encontrar
