@@ -1,22 +1,45 @@
 // plugins/withDebuggable.js
 //
-// Config plugin que añade android:debuggable="true" al AndroidManifest.xml
-// durante el build. Esto permite usar `adb run-as` contra el APK resultante,
-// algo necesario para los ejercicios introductorios de MobilePwn Lab.
+// Config plugin que:
+// 1. Agrega android:debuggable="true" al AndroidManifest.xml
+// 2. Desactiva la regla de lint HardcodedDebugMode (que normalmente bloquea esto)
 //
-// IMPORTANTE: Este flag NUNCA debe estar activo en una app de producción real.
-// Aquí lo usamos intencionalmente porque la app es un laboratorio educativo.
+// Esto es necesario porque MobilePwn Lab es un laboratorio educativo
+// que enseña la vulnerabilidad de tener debuggable=true en producción.
+// Para que el usuario pueda usar `adb run-as` contra la app, necesitamos
+// desactivar la protección de Google contra esta misma vulnerabilidad.
+//
+// IRONÍA INTENCIONAL: la app es vulnerable a propósito.
 
-const { withAndroidManifest } = require('expo/config-plugins');
+const { withAndroidManifest, withAppBuildGradle } = require('expo/config-plugins');
 
-module.exports = function withDebuggable(config) {
+function setDebuggableInManifest(config) {
   return withAndroidManifest(config, (config) => {
-    // Buscamos el nodo <application> dentro del manifest
     const application = config.modResults.manifest.application[0];
-
-    // Forzamos debuggable=true en el manifest final
     application.$['android:debuggable'] = 'true';
-
     return config;
   });
+}
+
+function disableHardcodedDebugLint(config) {
+  return withAppBuildGradle(config, (config) => {
+    // Si el bloque android { ... } no tiene lintOptions, lo agregamos
+    if (!config.modResults.contents.includes('disable "HardcodedDebugMode"')) {
+      // Inyectamos un bloque lintOptions justo antes del cierre del bloque android
+      config.modResults.contents = config.modResults.contents.replace(
+        /android\s*\{/,
+        `android {
+    lintOptions {
+        disable "HardcodedDebugMode"
+    }`
+      );
+    }
+    return config;
+  });
+}
+
+module.exports = function withDebuggable(config) {
+  config = setDebuggableInManifest(config);
+  config = disableHardcodedDebugLint(config);
+  return config;
 };
