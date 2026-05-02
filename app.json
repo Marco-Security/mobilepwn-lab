@@ -23,11 +23,15 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a0a0a"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "allowBackup": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "./plugins/withDebuggable"
+    ],
     "extra": {
       "eas": {
         "projectId": "ebe5a8b2-b7f8-4088-9be4-b591df7e258b"
