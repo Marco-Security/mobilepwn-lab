@@ -14,6 +14,7 @@ import { challenges } from '../data/challenges';
 import TabButton from '../components/TabButton';
 import CodeBlock from '../components/CodeBlock';
 import M1AsyncStorageScenario from '../scenarios/M1AsyncStorageScenario';
+import M2DeepLinkScenario from '../scenarios/M2DeepLinkScenario';
 
 // ─── Tab: Info ────────────────────────────────────────────────
 function InfoTab({ challenge }) {
@@ -96,6 +97,7 @@ function ScenarioTab({ challenge }) {
   // Mapa de scenarios disponibles. Cada nuevo módulo se registra aquí.
   const scenarios = {
     m1: M1AsyncStorageScenario,
+    m2: M2DeepLinkScenario,
   };
 
   const ScenarioComponent = scenarios[challenge.id];
