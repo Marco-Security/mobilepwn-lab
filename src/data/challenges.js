@@ -128,10 +128,10 @@ async function getSession() {
       'Generar el link en la app y capturar logs son acciones que se hacen en paralelo, no en secuencia',
     ],
 
-    flag: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+    flag: 'anclabank://quicklogin',
 
     validateInstructions:
-      'Pega aquí el token JWT completo que extrajiste del URL capturado en logs.',
+      'Pega aquí el URL completo del magic link que capturaste en los logs del dispositivo.',
 
     vulnCode:
 `// ❌ VULNERABLE — AnclaBank.js
