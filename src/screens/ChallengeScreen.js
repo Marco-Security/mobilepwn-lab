@@ -15,6 +15,7 @@ import TabButton from '../components/TabButton';
 import CodeBlock from '../components/CodeBlock';
 import M1AsyncStorageScenario from '../scenarios/M1AsyncStorageScenario';
 import M2DeepLinkScenario from '../scenarios/M2DeepLinkScenario';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 // ─── Tab: Info ────────────────────────────────────────────────
 function InfoTab({ challenge }) {
@@ -146,11 +147,13 @@ function ScenarioTab({ challenge }) {
 function ValidateTab({ challenge, onComplete }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   function handleValidate() {
     const answer = (challenge.flag || '').trim();
     if (answer && input.trim().includes(answer)) {
       setResult('correct');
+      setShowConfetti(true);
       onComplete();
     } else {
       setResult('wrong');
@@ -205,6 +208,22 @@ function ValidateTab({ challenge, onComplete }) {
             </View>
           </View>
         )}
+
+        {showConfetti && (
+          <ConfettiCannon
+            count={150}
+            origin={{ x: -10, y: 0 }}
+            autoStart={true}
+            fadeOut={true}
+            colors={[
+              colors.primary,
+              colors.accent,
+              colors.info,
+              colors.danger,
+              '#ffffff',
+            ]}
+          />
+        )}
       </View>
     </ScrollView>
   );
@@ -244,6 +263,7 @@ export default function ChallengeScreen({ route }) {
   const challenge = challenges.find((c) => c.id === id);
   const [activeTab, setActiveTab] = useState('info');
   const [completed, setCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const tabs = [
     { key: 'info', label: 'Info', locked: false },
@@ -273,11 +293,28 @@ export default function ChallengeScreen({ route }) {
           challenge={challenge}
           onComplete={() => {
             setCompleted(true);
+            setShowConfetti(true);
             setActiveTab('fix');
           }}
         />
       )}
       {activeTab === 'fix' && <FixTab challenge={challenge} />}
+
+      {showConfetti && (
+        <ConfettiCannon
+          count={150}
+          origin={{ x: -10, y: 0 }}
+          autoStart={true}
+          fadeOut={true}
+          colors={[
+            colors.primary,
+            colors.accent,
+            colors.info,
+            colors.danger,
+            '#ffffff',
+          ]}
+        />
+      )}
     </View>
   );
 }

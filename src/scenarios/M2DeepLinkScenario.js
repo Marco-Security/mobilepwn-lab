@@ -4,22 +4,38 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import BankAppShell from '../components/BankAppShell';
 
+function buildSessionToken(username) {
+  const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = btoa(
+    JSON.stringify({
+      user: username,
+      role: username === 'admin' ? 'superuser' : 'user',
+      balance: 99999,
+      iat: Date.now(),
+    })
+  );
+  return `${header}.${payload}.DEMO_SIGNATURE`;
+}
+
 export default function M2DeepLinkScenario() {
     const [linkSent, setLinkSent] = useState(false);
 
     async function handleGenerateLink() {
+        const token = buildSessionToken('admin');
+        const magicLink = `anclabank://quicklogin?token=${token}&expires=300`;
+        console.log('[ANCLABANK_QUICKLOGIN] Generated:', magicLink);
         setLinkSent(true);
     }
 
     return(
-    <BankAppShell subtitle="Acceso rápido.">
+    <BankAppShell subtitle="Acceso rápido">
         <Text style={styles.description}>
             Genera un link de acceso rápido para abrir tu sesión en otros dispositivos 
             donde ya iniciaste sesión.
         </Text>
         {linkSent ? (
         <View style={styles.alertBox}>
-          <Ionicons name="information-circle" size={14} color={colors.primary} />
+          <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
           <Text style={styles.alertText}>
             Link enviado a tu sesión vinculada en otro dispositivo. Expira en: 5 minutos
           </Text>

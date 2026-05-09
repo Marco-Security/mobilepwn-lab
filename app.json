@@ -24,7 +24,16 @@
         "backgroundColor": "#0a0a0a"
       },
       "edgeToEdgeEnabled": true,
-      "allowBackup": true
+      "allowBackup": true,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": ["BROWSABLE", "DEFAULT"],
+          "data": {
+            "scheme": "anclabank"
+          }
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
