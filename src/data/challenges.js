@@ -106,11 +106,6 @@ async function getSession() {
     scenarioDescription:
       'AnclaBank ofrece una función de "Acceso rápido" que permite al usuario abrir su sesión en otros dispositivos vinculados. Para hacerlo simple, el desarrollador decidió enviar el token de sesión directamente como parámetro en el URL del magic link. Su razonamiento fue: "como el link expira en 5 minutos, no hay riesgo." Demuéstrale que se equivocó.',
 
-    credentials: {
-      user: 'admin',
-      pass: 'admin123',
-    },
-
     objective:
       'Captura el JWT de sesión que viaja en el URL del magic link, sin necesidad de tener acceso autenticado a la app.',
 
