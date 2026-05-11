@@ -16,6 +16,7 @@ import CodeBlock from '../components/CodeBlock';
 import M1AsyncStorageScenario from '../scenarios/M1AsyncStorageScenario';
 import M2DeepLinkScenario from '../scenarios/M2DeepLinkScenario';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import M6HardcodedSecretsScenario from '../scenarios/M6HardcodedSecretsScenario';
 
 // ─── Tab: Info ────────────────────────────────────────────────
 function InfoTab({ challenge }) {
@@ -99,6 +100,7 @@ function ScenarioTab({ challenge }) {
   const scenarios = {
     m1: M1AsyncStorageScenario,
     m2: M2DeepLinkScenario,
+    m6: M6HardcodedSecretsScenario
   };
 
   const ScenarioComponent = scenarios[challenge.id];

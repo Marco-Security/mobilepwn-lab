@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
 
 /**
  * BankAppShell — UI compartida tipo "mini-app bancaria"
@@ -18,7 +19,10 @@ export default function BankAppShell({ title, subtitle, children }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.logo}>🏦 {title || 'AnclaBank'}</Text>
+        <View style={styles.logoRow}>
+          <Ionicons name="business" size={20} color={colors.primary} />
+          <Text style={styles.logo}>{title || 'AnclaBank'}</Text>
+        </View>
         {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
       <View style={styles.content}>{children}</View>
@@ -54,5 +58,10 @@ const styles = StyleSheet.create({
   },
   content: {
     gap: 12,
+  },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
 });
