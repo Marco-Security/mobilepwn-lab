@@ -230,91 +230,100 @@ export const challenges = [
   points: 100,
   icon: 'key',
   color: '#00ff41',
-  description: 'API keys y credenciales hardcodeadas en el bundle JS, extraíbles con strings o jadx.',
+  description: 'API keys hardcodeadas en el bundle JS son extraíbles con herramientas estándar de análisis estático.',
   completed: false,
 
   scenarioDescription:
-    'AnclaBank tiene un módulo de reportes internos para el equipo de finanzas. ' +
-    'El desarrollador conectó la app directamente a la base de datos de producción ' +
-    'y hardcodeó las credenciales en el código. Para "protegerlas", las codificó en ' +
-    'base64 creyendo que nadie las encontraría. Tu trabajo es demostrarle que se equivocó.',
+    'AnclaBank integró un servicio de analytics de terceros para monitorear ' +
+    'el comportamiento de usuarios. El desarrollador hardcodeó la API key del ' +
+    'servicio directamente en el código para "simplificar el desarrollo" y nunca ' +
+    'la removió antes de lanzar a producción. Un atacante con acceso al APK ' +
+    'puede extraerla en minutos.',
 
   objective:
-    'Extrae las credenciales de base de datos hardcodeadas en el bundle JS de la app ' +
-    'y decodifícalas para obtener el usuario y contraseña en texto plano.',
+    'Extrae la API key del servicio de analytics hardcodeada en el bundle JS de la app.',
 
   tools: [
     'adb (Android Debug Bridge)',
-    'Una terminal en tu sistema operativo',
-    'Herramienta para descomprimir archivos ZIP',
-    'Conocimiento básico de Base64',
+    'strings (herramienta de extracción de texto)',
+    'grep o findstr para filtrado',
+    'Una terminal Linux/Mac (recomendado) o PowerShell',
   ],
 
   environment: [
     'Dispositivo Android con USB Debugging activado, o',
     'Emulador Android Studio',
     'La app debe estar instalada como build standalone',
+    'Recomendado: entorno Linux o Mac para usar strings nativo',
   ],
 
   hints: [
-    'Los APK son archivos comprimidos — ¿qué formato comprimido conoces que se pueda abrir con cualquier descompresor?',
-    'Las apps React Native empaquetan todo su código JavaScript en un solo archivo dentro del APK',
-    'Buscar una cadena específica en un archivo grande requiere filtrado — ¿qué comandos de texto conoces para esto?',
-    'Base64 es una codificación reversible, no un cifrado. Cualquier terminal o herramienta online puede revertirla',
+    'Un APK es un archivo comprimido — cualquier descompresor puede abrirlo',
+    'Las apps React Native empaquetan todo su código en un solo archivo dentro de assets/',
+    'Las herramientas de análisis de binarios pueden extraer texto legible de archivos compilados',
+    'Buscar el nombre de la app o servicio en el bundle es más efectivo que buscar el secret directamente',
   ],
 
-  flag: 'admin:supersecret123',
+  flag: 'ANCLA_PROD_sk_live_x9f2mK8nQpL3rT7w',
 
   validateInstructions:
-    'Pega aquí las credenciales decodificadas en formato usuario:contraseña.',
+    'Pega aquí la API key completa que encontraste en el bundle JS.',
 
   vulnCode:
-    `// ❌ VULNERABLE — AnclaBank.js
-    // El desarrollador creyó que base64 "protegería" las credenciales.
-    // Base64 es codificación, NO cifrado. Es completamente reversible.
-    const DB_CONFIG = {
-      host: 'db.anclabank.internal',
-      port: 5432,
-      database: 'anclabank_prod',
-      credentials: btoa('admin:supersecret123'), // → "YWRtaW46c3VwZXJzZWNyZXQxMjM="
+    `// ❌ VULNERABLE — analytics.js
+    // API key hardcodeada directamente en el código cliente.
+    // Visible para cualquiera que extraiga y analice el APK.
+    const ANALYTICS_CONFIG = {
+      service: 'AnclaAnalytics',
+      endpoint: 'https://analytics.anclabank.io/v2/track',
+      apiKey: 'ANCLA_PROD_sk_live_x9f2mK8nQpL3rT7w',
+      environment: 'production',
     };
 
-    // Cualquiera que extraiga el bundle JS puede ejecutar:
-    // atob("YWRtaW46c3VwZXJzZWNyZXQxMjM=") → "admin:supersecret123"`,
+    // Un atacante solo necesita:
+    // 1. adb pull para descargar el APK
+    // 2. unzip para extraer el bundle
+    // 3. strings + grep para encontrar la key`,
 
   fixCode:
-    `// ✅ SEGURO — AnclaBank.js
+    `// ✅ SEGURO — analytics.js
 
-    // Opción 1: Variables de entorno (para apps con servidor)
-    // Las credenciales viven en el servidor, nunca en el cliente.
-    const DB_CONFIG = {
-      host: process.env.DB_HOST,
-      credentials: process.env.DB_CREDENTIALS,
-    };
+    // Opción 1: La API key vive en el servidor, nunca en el cliente.
+    // La app llama a tu propio backend, que llama al servicio de analytics.
+    // POST /api/track → tu servidor → AnclaAnalytics (con la key segura)
 
-    // Opción 2: La app nunca se conecta directamente a la DB.
-    // Toda operación va a través de una API segura con autenticación.
-    // GET /api/reports → el servidor valida el token y consulta la DB.
+    // Opción 2: Para keys que DEBEN estar en el cliente (ej. Google Maps),
+    // usa restricciones por plataforma en la consola del proveedor:
+    // - Restringir a tu package name (Android)
+    // - Restringir a tu bundle ID (iOS)
+    // - Restringir por IP si es posible
 
-    // Opción 3: Para secrets que DEBEN estar en el cliente (API keys públicas),
-    // usa servicios como AWS Secrets Manager o Google Secret Manager
-    // y rotación automática de credenciales.`,
+    // Opción 3: Usa variables de entorno en el build pipeline.
+    // La key se inyecta en tiempo de build, no en el código fuente.
+    // Nunca commitees .env a git.
+    const ANALYTICS_CONFIG = {
+      service: 'AnclaAnalytics',
+      endpoint: 'https://analytics.anclabank.io/v2/track',
+      apiKey: process.env.ANALYTICS_API_KEY, // inyectada en build time
+      environment: process.env.NODE_ENV,
+    };`,
 
   fixExplanation:
-    'El problema fundamental es que una app móvil nunca debería conectarse ' +
-    'directamente a una base de datos de producción. El código del cliente ' +
-    '(el APK) es completamente reversible — todo lo que pongas ahí puede ser ' +
-    'extraído. La arquitectura correcta interpone una API segura entre la app ' +
-    'y los datos. La app se autentica con la API (con un token de sesión), ' +
-    'y la API (que vive en un servidor controlado) es la única que tiene ' +
-    'acceso a la base de datos. Las credenciales de DB nunca salen del servidor.',
+    'El problema fundamental es que el código de una app móvil es completamente ' +
+    'reversible. Todo lo que pongas en el bundle JS puede ser extraído. Una API key ' +
+    'de producción expuesta permite a un atacante hacer llamadas ilimitadas al servicio ' +
+    'en tu nombre, generando costos, exfiltrando datos de usuarios, o comprometiendo ' +
+    'la infraestructura completa si es una key de AWS o GCP. ' +
+    'El fix correcto es nunca enviar secrets al cliente — toda llamada sensible ' +
+    'debe pasar por un backend que tú controlas.',
 
   rules: [
-    'Nunca hardcodees credenciales, API keys o secrets en código cliente',
-    'Base64 no es cifrado — nunca lo uses como medida de seguridad',
-    'Las apps móviles no deben conectarse directamente a bases de datos de producción',
-    'Toda operación sensible debe pasar por una API con autenticación server-side',
-    'En auditorías, busca patrones Base64 largos en el bundle JS — son señal de secrets mal protegidos',
+    'Nunca hardcodees API keys, tokens o secrets en código cliente',
+    'Usa variables de entorno inyectadas en build time, no en runtime',
+    'Toda llamada a servicios de terceros debe pasar por tu propio backend',
+    'Aplica restricciones por plataforma en las consolas de los proveedores de API',
+    'En auditorías, busca patrones sk_live_, pk_live_, AKIA (AWS) en el bundle JS',
+    'Escanea tu repositorio con herramientas como truffleHog o git-secrets antes de cada release',
   ],
   },
   {

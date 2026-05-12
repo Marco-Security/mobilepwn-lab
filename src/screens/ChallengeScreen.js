@@ -116,12 +116,6 @@ function ScenarioTab({ challenge }) {
           </Text>
         </View>
 
-        <Text style={styles.sectionTitle}>// escenario</Text>
-        <Text style={styles.bodyText}>
-          {challenge.scenarioDescription ||
-            'Una app guarda datos sensibles en el dispositivo. Encuentra dónde y cómo.'}
-        </Text>
-
         {ScenarioComponent ? (
           <ScenarioComponent />
         ) : (
