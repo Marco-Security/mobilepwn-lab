@@ -260,7 +260,8 @@ export const challenges = [
   hints: [
     'Un APK es un archivo comprimido — cualquier descompresor puede abrirlo',
     'Las apps React Native empaquetan todo su código en un solo archivo dentro de assets/',
-    'Las API keys de servicios suelen tener prefijos reconocibles. Busca en el bundle por el nombre del servicio que aparece en el scenario.',
+    'La herramienta strings extrae texto legible de archivos binarios — combínala con grep para filtrar',
+    'Las API keys de servicios suelen tener prefijos reconocibles. Busca en el bundle por el nombre del servicio que aparece en el scenario',
   ],
 
   flag: 'ANCLA-PROD-sk-live-x9f2mK8nQpL3rT7w',
