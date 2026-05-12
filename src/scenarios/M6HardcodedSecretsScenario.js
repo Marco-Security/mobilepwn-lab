@@ -10,7 +10,7 @@ import BankAppShell from '../components/BankAppShell';
 const ANALYTICS_CONFIG = {
   service: 'AnclaAnalytics',
   endpoint: 'https://analytics.anclabank.io/v2/track',
-  apiKey: 'ANCLA_PROD_sk_live_x9f2mK8nQpL3rT7w',
+  apiKey: 'ANCLA-PROD-sk-live-x9f2mK8nQpL3rT7w',
   environment: 'production',
 };
 

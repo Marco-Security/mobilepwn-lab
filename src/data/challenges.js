@@ -260,11 +260,10 @@ export const challenges = [
   hints: [
     'Un APK es un archivo comprimido — cualquier descompresor puede abrirlo',
     'Las apps React Native empaquetan todo su código en un solo archivo dentro de assets/',
-    'Las herramientas de análisis de binarios pueden extraer texto legible de archivos compilados',
-    'Buscar el nombre de la app o servicio en el bundle es más efectivo que buscar el secret directamente',
+    'Las API keys de servicios suelen tener prefijos reconocibles. Busca en el bundle por el nombre del servicio que aparece en el scenario.',
   ],
 
-  flag: 'ANCLA_PROD_sk_live_x9f2mK8nQpL3rT7w',
+  flag: 'ANCLA-PROD-sk-live-x9f2mK8nQpL3rT7w',
 
   validateInstructions:
     'Pega aquí la API key completa que encontraste en el bundle JS.',
@@ -276,7 +275,7 @@ export const challenges = [
     const ANALYTICS_CONFIG = {
       service: 'AnclaAnalytics',
       endpoint: 'https://analytics.anclabank.io/v2/track',
-      apiKey: 'ANCLA_PROD_sk_live_x9f2mK8nQpL3rT7w',
+      apiKey: 'ANCLA-PROD-sk-live-x9f2mK8nQpL3rT7w',
       environment: 'production',
     };
 
